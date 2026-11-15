@@ -1,10 +1,13 @@
-const CACHE_NAME = 'routine-tablet-v3';
+const CACHE_NAME = 'routine-tablet-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './manifest.json',
+  './fonts/Inter-Regular.woff2',
+  './fonts/Inter-SemiBold.woff2',
+  './fonts/Inter-Bold.woff2',
   './icons/favicon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -34,22 +37,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch fresh copy in background to update cache
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, networkResponse);
             });
           }
-        }).catch(() => {
-          // Network failure is fine when offline
-        });
+        }).catch(() => {});
         return cachedResponse;
       }
       return fetch(event.request).then((networkResponse) => {
@@ -62,9 +61,6 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       });
-    }).catch(() => {
-      // Offline fallback
-      return caches.match('./index.html');
-    })
+    }).catch(() => caches.match('./index.html'))
   );
 });

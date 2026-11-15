@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Routine Tablet</title>
   
   <!-- PWA & Mobile Web App Meta -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#090a0f">
+  <meta name="theme-color" content="#0B0D12">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,209 +15,298 @@
   <link rel="icon" type="image/png" href="icons/favicon.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  <!-- Inter font from system & style sheet -->
+  <!-- Local Inter font & styles -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app-root" class="app-container">
-    <!-- LEFT PANEL: Dashboard & Status -->
-    <aside class="sidebar">
-      <div class="sidebar-top">
-        <!-- Digital Clock & Date -->
-        <div class="clock-card">
-          <div class="time-row">
-            <span id="digital-clock" class="digital-clock">09:30</span>
-            <span id="clock-ampm" class="clock-ampm">AM</span>
-          </div>
-          <div id="date-display" class="date-display">Sunday, Nov 15</div>
-          <div id="greeting-display" class="greeting-display">
-            <span class="greeting-icon" id="greeting-icon">☀️</span>
-            <span id="greeting-text">Good morning, Kishan</span>
-          </div>
-        </div>
+  <!-- Canvas Confetti Overlay (for calm 100% celebration) -->
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
 
-        <!-- Streak Card -->
-        <div class="streak-card" id="streak-card">
-          <div class="streak-header">
-            <div class="streak-title-wrap">
-              <span class="streak-flame">🔥</span>
-              <span class="streak-label">DAILY STREAK</span>
-            </div>
-            <div class="streak-best" id="best-streak-tag">Best: 0d</div>
-          </div>
-          <div class="streak-number-row">
-            <span class="streak-count" id="current-streak-val">0</span>
-            <span class="streak-days-unit">DAYS</span>
-          </div>
-          <div class="streak-status-bar" id="streak-status-text">Complete all tasks to advance streak</div>
+  <div id="app-root" class="app-layout">
+    <!-- ====================================================================
+         LEFT COLUMN (30% Width - Full Height)
+         Zone A: Clock & Greeting
+         Zone B: Circular Progress Ring & Hero Streak
+         Zone C: 7-Day History Strip
+         ==================================================================== -->
+    <aside class="sidebar-column">
+      <!-- Zone A: Huge Clock & Date -->
+      <div class="zone-top">
+        <div class="clock-display">
+          <span id="digital-clock" class="digital-time">09:58</span>
+          <span id="clock-ampm" class="clock-ampm">AM</span>
         </div>
-
-        <!-- Progress Overview -->
-        <div class="progress-card">
-          <div class="progress-header">
-            <span class="progress-title">TODAY'S PROGRESS</span>
-            <span class="progress-fraction" id="progress-fraction">0 of 10</span>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
-          </div>
-          <div class="progress-footer">
-            <span class="progress-percent" id="progress-percent">0% Done</span>
-            <span class="rest-badge" id="rest-day-indicator" style="display: none;">🏖️ Rest Day</span>
-          </div>
-        </div>
-
-        <!-- Motivational Quote -->
-        <div class="quote-card" id="quote-card">
-          <p class="quote-text" id="quote-text">"Consistency is the DNA of mastery."</p>
-          <span class="quote-author" id="quote-author">— Robin Sharma</span>
+        <div id="date-display" class="date-text">Sunday, November 15</div>
+        <div class="greeting-row">
+          <span class="greeting-icon-wrap" id="greeting-icon-wrap">
+            <!-- Sun SVG line icon -->
+            <svg class="icon-svg icon-sun" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span id="greeting-text" class="greeting-text">Good morning, Kishan</span>
         </div>
       </div>
 
-      <!-- Quick Action Toolbar -->
-      <div class="sidebar-bottom">
-        <div class="device-status">
-          <span class="status-dot" id="wakelock-dot"></span>
-          <span class="status-label" id="wakelock-label">Awake</span>
+      <!-- Zone B: Hero Circular Progress Ring & Streak -->
+      <div class="zone-middle">
+        <div class="progress-ring-card">
+          <div class="ring-wrapper">
+            <svg class="progress-ring-svg" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#2DD4BF" />
+                  <stop offset="100%" stop-color="#06B6D4" />
+                </linearGradient>
+              </defs>
+              <!-- Background circle track -->
+              <circle class="ring-bg" cx="100" cy="100" r="84"></circle>
+              <!-- Animated progress ring -->
+              <circle id="progress-ring-bar" class="ring-progress" cx="100" cy="100" r="84"></circle>
+            </svg>
+
+            <!-- Text in center of ring -->
+            <div class="ring-center-content">
+              <span id="ring-percent" class="ring-percent-num">0%</span>
+              <span id="ring-fraction" class="ring-fraction-text">0 of 10 done</span>
+            </div>
+          </div>
         </div>
-        
-        <div class="action-buttons-row">
-          <button class="icon-btn" id="btn-sound" title="Toggle Sound" aria-label="Toggle Sound">
-            <span id="sound-icon">🔊</span>
-          </button>
-          <button class="icon-btn" id="btn-rest" title="Mark Today as Rest Day" aria-label="Rest Day">
-            <span>🏖️</span>
-          </button>
-          <button class="icon-btn" id="btn-history" title="History & Heatmap" aria-label="History">
-            <span>📊</span>
-          </button>
-          <button class="icon-btn" id="btn-night" title="Toggle Night Mode" aria-label="Night Mode">
-            <span>🌙</span>
-          </button>
-          <button class="icon-btn" id="btn-settings" title="Routine Editor & Settings" aria-label="Settings">
-            <span>⚙️</span>
-          </button>
+
+        <!-- Hero Streak -->
+        <div class="hero-streak-card" id="streak-card">
+          <div class="streak-flame-icon">
+            <!-- Flame SVG line-art with warm amber tone -->
+            <svg class="icon-svg icon-flame" viewBox="0 0 24 24">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+            </svg>
+          </div>
+          <div class="streak-details">
+            <div class="streak-num-row">
+              <span id="current-streak-val" class="streak-number">0</span>
+              <span class="streak-unit-label">DAY STREAK</span>
+            </div>
+            <div class="streak-meta-row">
+              <span id="best-streak-tag" class="streak-best-badge">Best: 0 days</span>
+              <span id="streak-status-hint" class="streak-hint">10 left today</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Single subtle quote line under ring -->
+        <div class="quote-container">
+          <p id="quote-text" class="quote-line">"Consistency is the DNA of mastery."</p>
+        </div>
+      </div>
+
+      <!-- Zone C: 7-Day History Strip (Mon - Sun) -->
+      <div class="zone-bottom">
+        <div class="week-strip-header">
+          <span class="week-strip-title">THIS WEEK</span>
+          <span id="rest-badge-pill" class="rest-badge-pill" style="display: none;">REST DAY</span>
+        </div>
+        <div class="week-strip-grid" id="week-strip">
+          <!-- Populated by JS: 7 days with filled/half/empty circles -->
         </div>
       </div>
     </aside>
 
-    <!-- RIGHT PANEL: Routine Task Grid -->
-    <main class="main-content">
-      <header class="main-header">
-        <div class="main-title-wrap">
-          <h1 class="main-title">Daily Routine</h1>
-          <span class="badge-filter" id="active-day-tag">Today</span>
+    <!-- ====================================================================
+         RIGHT COLUMN (70% Width - Full Height)
+         Header: Title + Pill Segmented Control
+         Hero: "Up Next" Dynamic Card
+         Grid: Evenly Stretching Task Cards (No empty space)
+         ==================================================================== -->
+    <main class="content-column">
+      <!-- Section Header -->
+      <header class="content-header">
+        <div class="header-left">
+          <h1 class="header-title">Today's Routine</h1>
+          <span id="active-filter-badge" class="filter-count-badge">10 tasks</span>
         </div>
 
-        <!-- Filter tabs for quick scanning -->
-        <div class="filter-tabs">
-          <button class="tab-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
-          <button class="tab-btn" data-filter="morning">Morning (<span id="count-morning">0</span>)</button>
-          <button class="tab-btn" data-filter="afternoon">Afternoon (<span id="count-afternoon">0</span>)</button>
-          <button class="tab-btn" data-filter="evening">Evening (<span id="count-evening">0</span>)</button>
+        <!-- Segmented Control Switcher -->
+        <div class="segmented-control">
+          <button class="seg-btn active" data-filter="all">All</button>
+          <button class="seg-btn" data-filter="morning">Morning</button>
+          <button class="seg-btn" data-filter="afternoon">Afternoon</button>
+          <button class="seg-btn" data-filter="evening">Evening</button>
         </div>
       </header>
 
-      <!-- Task Cards Grid -->
-      <section class="task-grid-container">
-        <div class="task-grid" id="task-grid">
-          <!-- Dynamically populated task cards -->
+      <!-- Up Next Hero Card -->
+      <section class="upnext-card-container">
+        <div class="upnext-card" id="upnext-card">
+          <div class="upnext-left">
+            <div class="upnext-eyebrow">
+              <span class="pulse-dot"></span>
+              <span id="upnext-label">UP NEXT</span>
+              <span class="upnext-time" id="upnext-time">07:00 AM</span>
+            </div>
+            <h2 class="upnext-title" id="upnext-title">Wake up and drink water</h2>
+          </div>
+          <button class="btn-mark-done" id="btn-upnext-done" aria-label="Mark Up Next Done">
+            <svg class="icon-svg icon-check-btn" viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Mark done</span>
+          </button>
         </div>
       </section>
 
-      <!-- All-done banner when 100% completed -->
-      <div class="celebration-banner" id="celebration-banner" style="display: none;">
-        <div class="celebration-content">
-          <span class="celebration-icon">🎉</span>
-          <div class="celebration-text">
-            <strong>All Done For Today!</strong>
-            <span>Streak safely preserved. Outstanding consistency!</span>
-          </div>
+      <!-- Full-Height Stretching Task Grid -->
+      <section class="tasks-scroll-area">
+        <div class="tasks-stretching-grid" id="task-grid">
+          <!-- Dynamically populated 2-column stretching cards -->
         </div>
-      </div>
+      </section>
+
+      <!-- Floating Glass Action Dock (Bottom Right) -->
+      <nav class="floating-dock">
+        <!-- Awake indicator -->
+        <div class="dock-status" id="wakelock-pill" title="Screen WakeLock Active">
+          <span class="dock-dot" id="wakelock-dot"></span>
+        </div>
+
+        <!-- Sound Toggle -->
+        <button class="dock-btn" id="btn-sound" title="Toggle Sound Feedback" aria-label="Toggle Sound">
+          <svg class="icon-svg" id="icon-sound" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+
+        <!-- Stats / History -->
+        <button class="dock-btn" id="btn-history" title="History & Analytics" aria-label="History">
+          <svg class="icon-svg" viewBox="0 0 24 24">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </button>
+
+        <!-- Rest Day Toggle -->
+        <button class="dock-btn" id="btn-rest" title="Toggle Rest Day" aria-label="Rest Day">
+          <svg class="icon-svg" viewBox="0 0 24 24">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+        </button>
+
+        <!-- Night Mode Toggle -->
+        <button class="dock-btn" id="btn-night" title="Toggle Night Mode" aria-label="Night Mode">
+          <svg class="icon-svg" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Settings Modal Toggle -->
+        <button class="dock-btn" id="btn-settings" title="Routine Editor & Settings" aria-label="Settings">
+          <svg class="icon-svg" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </nav>
     </main>
   </div>
 
-  <!-- SETTINGS & ROUTINE EDITOR MODAL -->
-  <div class="modal-overlay" id="settings-modal" style="display: none;">
-    <div class="modal-card modal-large">
-      <div class="modal-header">
-        <h2 class="modal-title">Routine Editor & Settings</h2>
-        <button class="close-btn" id="btn-close-settings" aria-label="Close Settings">&times;</button>
+  <!-- ====================================================================
+       SETTINGS & ROUTINE EDITOR MODAL (Linear Style)
+       ==================================================================== -->
+  <div class="modal-backdrop" id="settings-modal" style="display: none;">
+    <div class="modal-surface">
+      <div class="modal-head">
+        <h2 class="modal-heading">Settings & Routine Editor</h2>
+        <button class="modal-close-icon" id="btn-close-settings" aria-label="Close">
+          <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
 
-      <div class="modal-tabs">
-        <button class="modal-tab-btn active" data-modaltab="routine">Routine Template</button>
-        <button class="modal-tab-btn" data-modaltab="preferences">Preferences</button>
-        <button class="modal-tab-btn" data-modaltab="backup">Backup & Restore</button>
+      <div class="modal-nav">
+        <button class="modal-nav-btn active" data-modaltab="routine">Routine Template</button>
+        <button class="modal-nav-btn" data-modaltab="preferences">Preferences</button>
+        <button class="modal-nav-btn" data-modaltab="backup">Backup & Restore</button>
       </div>
 
-      <div class="modal-body">
-        <!-- TAB 1: ROUTINE TEMPLATE EDITOR -->
-        <div class="tab-pane active" id="pane-routine">
-          <div class="pane-action-bar">
-            <span class="pane-subtitle">Manage default routine tasks generated each morning</span>
-            <button class="btn btn-primary" id="btn-add-task">+ Add Task</button>
+      <div class="modal-content">
+        <!-- PANE: ROUTINE TEMPLATE -->
+        <div class="pane-content active" id="pane-routine">
+          <div class="pane-top-row">
+            <span class="pane-hint">Scheduled daily tasks automatically populated each morning</span>
+            <button class="btn-action btn-teal" id="btn-add-task">
+              <svg class="icon-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Add Task</span>
+            </button>
           </div>
 
-          <!-- Add / Edit Task Form -->
-          <form class="task-form" id="task-form" style="display: none;">
+          <!-- Add / Edit Form -->
+          <form class="task-editor-form" id="task-form" style="display: none;">
             <input type="hidden" id="edit-task-id" value="">
-            <div class="form-row">
-              <div class="form-group flex-2">
+            <div class="form-grid">
+              <div class="form-field flex-2">
                 <label for="task-title-input">Task Title</label>
-                <input type="text" id="task-title-input" class="form-control" placeholder="e.g. Morning meditation" required>
+                <input type="text" id="task-title-input" class="text-input" placeholder="e.g. Morning meditation" required>
               </div>
-              <div class="form-group flex-1">
+              <div class="form-field flex-1">
                 <label for="task-tod-select">Time of Day</label>
-                <select id="task-tod-select" class="form-control">
+                <select id="task-tod-select" class="select-input">
                   <option value="morning">Morning</option>
                   <option value="afternoon">Afternoon</option>
                   <option value="evening">Evening</option>
                   <option value="anytime">Anytime</option>
                 </select>
               </div>
-              <div class="form-group flex-1">
+              <div class="form-field flex-1">
                 <label for="task-time-input">Target Time (Optional)</label>
-                <input type="time" id="task-time-input" class="form-control">
+                <input type="time" id="task-time-input" class="text-input">
               </div>
             </div>
 
-            <div class="form-group">
-              <label>Active Days</label>
-              <div class="days-selector">
-                <label class="day-check"><input type="checkbox" name="task-day" value="0" checked> Sun</label>
-                <label class="day-check"><input type="checkbox" name="task-day" value="1" checked> Mon</label>
-                <label class="day-check"><input type="checkbox" name="task-day" value="2" checked> Tue</label>
-                <label class="day-check"><input type="checkbox" name="task-day" value="3" checked> Wed</label>
-                <label class="day-check"><input type="checkbox" name="task-day" value="4" checked> Thu</label>
-                <label class="day-check"><input type="checkbox" name="task-day" value="5" checked> Fri</label>
-                <label class="day-check"><input type="checkbox" name="task-day" value="6" checked> Sat</label>
+            <div class="form-field">
+              <label>Repeat Days</label>
+              <div class="day-pills-row">
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="0" checked><span>Sun</span></label>
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="1" checked><span>Mon</span></label>
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="2" checked><span>Tue</span></label>
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="3" checked><span>Wed</span></label>
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="4" checked><span>Thu</span></label>
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="5" checked><span>Fri</span></label>
+                <label class="day-pill-check"><input type="checkbox" name="task-day" value="6" checked><span>Sat</span></label>
               </div>
             </div>
 
-            <div class="form-actions">
-              <button type="submit" class="btn btn-success" id="btn-save-task">Save Task</button>
-              <button type="button" class="btn btn-secondary" id="btn-cancel-task">Cancel</button>
+            <div class="form-buttons">
+              <button type="submit" class="btn-action btn-teal">Save Task</button>
+              <button type="button" class="btn-action btn-ghost" id="btn-cancel-task">Cancel</button>
             </div>
           </form>
 
-          <!-- Template Task List -->
-          <div class="template-list" id="template-list">
-            <!-- Rendered tasks with reorder / edit / delete -->
-          </div>
+          <!-- Template List -->
+          <div class="template-items-list" id="template-list"></div>
         </div>
 
-        <!-- TAB 2: PREFERENCES -->
-        <div class="tab-pane" id="pane-preferences" style="display: none;">
-          <div class="settings-section">
-            <h3 class="section-title">Streak & Rollover Rules</h3>
-            <div class="setting-row">
-              <div class="setting-info">
-                <strong>Completion Threshold for Streak</strong>
+        <!-- PANE: PREFERENCES -->
+        <div class="pane-content" id="pane-preferences" style="display: none;">
+          <div class="settings-group">
+            <h3 class="group-title">Streak & Rollover Rules</h3>
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-name">Completion Threshold</span>
                 <span class="setting-desc">Percentage of scheduled tasks required to advance streak</span>
               </div>
-              <select id="setting-threshold" class="form-control form-control-sm">
+              <select id="setting-threshold" class="select-input select-compact">
                 <option value="1.0">100% (All Tasks)</option>
                 <option value="0.9">90% (Grace of 1-2)</option>
                 <option value="0.8">80%</option>
@@ -225,88 +314,103 @@
               </select>
             </div>
 
-            <div class="setting-row">
-              <div class="setting-info">
-                <strong>Clock Format</strong>
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-name">Clock Format</span>
                 <span class="setting-desc">Toggle between 12-hour (AM/PM) and 24-hour military format</span>
               </div>
-              <select id="setting-clock-format" class="form-control form-control-sm">
+              <select id="setting-clock-format" class="select-input select-compact">
                 <option value="12">12-Hour (09:30 AM)</option>
                 <option value="24">24-Hour (21:30)</option>
               </select>
             </div>
 
-            <div class="setting-row">
-              <div class="setting-info">
-                <strong>Audio Feedback</strong>
-                <span class="setting-desc">Play synthesized sound when toggling tasks</span>
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-name">Harmonic Audio Feedback</span>
+                <span class="setting-desc">Play soothing synthesized chime when checking tasks</span>
               </div>
-              <label class="switch">
+              <label class="toggle-switch">
                 <input type="checkbox" id="setting-sound" checked>
-                <span class="slider round"></span>
+                <span class="toggle-track"></span>
               </label>
             </div>
           </div>
 
-          <div class="settings-section">
-            <h3 class="section-title">Always-On Tablet & Night Mode</h3>
-            <div class="setting-row">
-              <div class="setting-info">
-                <strong>Automatic Night Dimming</strong>
-                <span class="setting-desc">Automatically dims UI and lowers contrast between set hours</span>
+          <div class="settings-group">
+            <h3 class="group-title">Always-On Tablet & Night Dimming</h3>
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-name">Auto Night Dimming</span>
+                <span class="setting-desc">Automatically dims UI to deep black between night hours</span>
               </div>
-              <label class="switch">
+              <label class="toggle-switch">
                 <input type="checkbox" id="setting-night-auto" checked>
-                <span class="slider round"></span>
+                <span class="toggle-track"></span>
               </label>
             </div>
 
-            <div class="setting-row">
-              <div class="setting-info">
-                <strong>Night Mode Hours</strong>
-                <span class="setting-desc">Start and end hours for night mode (24h)</span>
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-name">Night Mode Window</span>
+                <span class="setting-desc">Active hours for low brightness ambient display</span>
               </div>
-              <div class="inline-inputs">
+              <div class="inline-times">
                 <span>From</span>
-                <input type="number" id="setting-night-start" class="form-control form-control-xs" min="0" max="23" value="22">
+                <input type="number" id="setting-night-start" class="text-input num-compact" min="0" max="23" value="22">
                 <span>To</span>
-                <input type="number" id="setting-night-end" class="form-control form-control-xs" min="0" max="23" value="6">
+                <input type="number" id="setting-night-end" class="text-input num-compact" min="0" max="23" value="6">
               </div>
             </div>
 
-            <div class="setting-row">
-              <div class="setting-info">
-                <strong>Screen Burn-In Protection</strong>
-                <span class="setting-desc">Micro-shifts the layout by a few pixels every few minutes</span>
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-name">Pixel Shift Burn-In Protection</span>
+                <span class="setting-desc">Micro-shifts the layout by a few pixels every 3 minutes</span>
               </div>
-              <label class="switch">
+              <label class="toggle-switch">
                 <input type="checkbox" id="setting-burnin" checked>
-                <span class="slider round"></span>
+                <span class="toggle-track"></span>
               </label>
             </div>
           </div>
         </div>
 
-        <!-- TAB 3: BACKUP & RESTORE -->
-        <div class="tab-pane" id="pane-backup" style="display: none;">
-          <div class="backup-grid">
-            <div class="backup-card">
-              <h4>Export All Data</h4>
-              <p>Save your routines, history, and streak records to a JSON file.</p>
-              <button class="btn btn-primary" id="btn-export-json">📥 Export Backup (.json)</button>
+        <!-- PANE: BACKUP & RESTORE -->
+        <div class="pane-content" id="pane-backup" style="display: none;">
+          <div class="backup-cards-stack">
+            <div class="backup-row-card">
+              <div class="backup-meta">
+                <h4>Export Routine Data</h4>
+                <p>Download your complete routine template, streak logs, and history as JSON.</p>
+              </div>
+              <button class="btn-action btn-teal" id="btn-export-json">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Export Backup (.json)</span>
+              </button>
             </div>
 
-            <div class="backup-card">
-              <h4>Import Data</h4>
-              <p>Restore your data from a previously exported JSON backup.</p>
+            <div class="backup-row-card">
+              <div class="backup-meta">
+                <h4>Import Routine Data</h4>
+                <p>Restore your tasks and history from a previously saved JSON backup file.</p>
+              </div>
               <input type="file" id="import-file-input" accept=".json" style="display: none;">
-              <button class="btn btn-secondary" id="btn-trigger-import">📤 Choose Backup File</button>
+              <button class="btn-action btn-secondary" id="btn-trigger-import">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Select JSON File</span>
+              </button>
             </div>
 
-            <div class="backup-card danger-zone">
-              <h4>Reset to Default Starting Routine</h4>
-              <p>Reset today's tasks and routine template to the original 10-task schedule.</p>
-              <button class="btn btn-danger" id="btn-reset-routine">⚠️ Reset to Defaults</button>
+            <div class="backup-row-card danger-card">
+              <div class="backup-meta">
+                <h4>Reset to Default Routine</h4>
+                <p>Reset template tasks to the default 10-task schedule (streaks preserved).</p>
+              </div>
+              <button class="btn-action btn-danger" id="btn-reset-routine">
+                <svg class="icon-svg" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                <span>Reset to Defaults</span>
+              </button>
             </div>
           </div>
         </div>
@@ -314,65 +418,66 @@
     </div>
   </div>
 
-  <!-- HISTORY & HEATMAP MODAL -->
-  <div class="modal-overlay" id="history-modal" style="display: none;">
-    <div class="modal-card modal-large">
-      <div class="modal-header">
-        <h2 class="modal-title">Habit History & Analytics</h2>
-        <button class="close-btn" id="btn-close-history" aria-label="Close History">&times;</button>
+  <!-- ====================================================================
+       HISTORY & ANALYTICS MODAL (Calendar Heatmap)
+       ==================================================================== -->
+  <div class="modal-backdrop" id="history-modal" style="display: none;">
+    <div class="modal-surface">
+      <div class="modal-head">
+        <h2 class="modal-heading">Habit History & Analytics</h2>
+        <button class="modal-close-icon" id="btn-close-history" aria-label="Close">
+          <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
 
-      <div class="modal-body">
-        <!-- Stats Row -->
-        <div class="stats-row">
-          <div class="stat-pill">
-            <span class="stat-num" id="stat-current-streak">0</span>
-            <span class="stat-lbl">Current Streak</span>
+      <div class="modal-content">
+        <!-- Stat KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-number" id="stat-current-streak">0</span>
+            <span class="kpi-label">CURRENT STREAK</span>
           </div>
-          <div class="stat-pill">
-            <span class="stat-num" id="stat-best-streak">0</span>
-            <span class="stat-lbl">Best Streak</span>
+          <div class="kpi-card">
+            <span class="kpi-number" id="stat-best-streak">0</span>
+            <span class="kpi-label">BEST STREAK</span>
           </div>
-          <div class="stat-pill">
-            <span class="stat-num" id="stat-7day-rate">0%</span>
-            <span class="stat-lbl">Last 7 Days</span>
+          <div class="kpi-card">
+            <span class="kpi-number" id="stat-7day-rate">0%</span>
+            <span class="kpi-label">LAST 7 DAYS</span>
           </div>
-          <div class="stat-pill">
-            <span class="stat-num" id="stat-30day-rate">0%</span>
-            <span class="stat-lbl">Last 30 Days</span>
+          <div class="kpi-card">
+            <span class="kpi-number" id="stat-30day-rate">0%</span>
+            <span class="kpi-label">LAST 30 DAYS</span>
           </div>
-          <div class="stat-pill">
-            <span class="stat-num" id="stat-total-completed">0</span>
-            <span class="stat-lbl">Perfect Days</span>
+          <div class="kpi-card">
+            <span class="kpi-number" id="stat-total-completed">0</span>
+            <span class="kpi-label">PERFECT DAYS</span>
           </div>
         </div>
 
-        <!-- Heatmap Section -->
-        <div class="history-section">
-          <div class="history-section-header">
+        <!-- 60-Day Heatmap -->
+        <div class="heatmap-card">
+          <div class="heatmap-top">
             <h3>Activity Heatmap (Past 60 Days)</h3>
             <div class="heatmap-legend">
-              <span class="legend-item"><span class="legend-box cell-completed"></span> Perfect</span>
-              <span class="legend-item"><span class="legend-box cell-partial"></span> Partial</span>
-              <span class="legend-item"><span class="legend-box cell-missed"></span> Missed</span>
-              <span class="legend-item"><span class="legend-box cell-rest"></span> Rest</span>
+              <span class="legend-dot dot-perfect"></span><span>Perfect</span>
+              <span class="legend-dot dot-partial"></span><span>Partial</span>
+              <span class="legend-dot dot-missed"></span><span>Missed</span>
+              <span class="legend-dot dot-rest"></span><span>Rest</span>
             </div>
           </div>
-          <div class="heatmap-grid" id="heatmap-grid">
-            <!-- Populated via JS -->
-          </div>
+          <div class="heatmap-cells-grid" id="heatmap-grid"></div>
         </div>
 
-        <!-- Selected Day Inspector -->
-        <div class="day-details-panel" id="day-details-panel">
-          <h4 id="detail-date-title">Select a day on the heatmap to view details</h4>
+        <!-- Day Inspector -->
+        <div class="inspector-card" id="day-details-panel">
+          <h4 id="detail-date-title">Select a day on the heatmap to view completed routine tasks</h4>
           <div id="detail-tasks-list" class="detail-tasks-list"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Service Worker registration and App logic -->
   <script src="app.js"></script>
 </body>
 </html>
