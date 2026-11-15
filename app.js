@@ -2546,6 +2546,18 @@
 
       heatmapGrid.appendChild(cell);
     }
+
+    // Render Weight History in Stats
+    const historyWeightList = document.getElementById('history-weight-list');
+    if (historyWeightList) {
+      historyWeightList.innerHTML = (state.weightLogs || []).slice(-4).reverse().map(l => `
+        <div class="weight-log-item">
+          <span class="log-date">${l.date}</span>
+          <span class="log-val">${l.weight} kg</span>
+          <span class="log-note">${l.note || ''}</span>
+        </div>
+      `).join('');
+    }
   }
 
   function showDayDetail(dateStr, isToday = false) {
