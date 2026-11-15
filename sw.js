@@ -1,4 +1,4 @@
-const CACHE_NAME = 'routine-tablet-v7';
+const CACHE_NAME = 'routine-tablet-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
