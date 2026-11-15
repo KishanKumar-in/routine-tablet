@@ -1,5 +1,5 @@
 .playwright-cli/
 *.log
-local_test.png
-desktop-test.png
+*.png
+!icons/*.png
 .DS_Store
