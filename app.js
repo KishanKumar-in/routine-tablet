@@ -1313,8 +1313,16 @@
     }
   }
 
+  // --- VIEWPORT SIZING ---
+  function updateAppHeight() {
+    const h = window.innerHeight;
+    document.documentElement.style.setProperty('--app-height', `${h}px`);
+  }
+
   // --- INITIALIZATION ---
   function init() {
+    updateAppHeight();
+    window.addEventListener('resize', updateAppHeight);
     loadState();
     checkDateAndRollover();
     setupEventListeners();

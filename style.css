@@ -27,6 +27,8 @@
 }
 
 :root {
+  --app-height: 100vh;
+
   /* Surface Palette */
   --bg-canvas: #0B0D12;
   --bg-gradient: linear-gradient(180deg, #0B0D12 0%, #0F1218 100%);
@@ -103,8 +105,8 @@ body.night-mode {
 
 html, body {
   width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
+  height: var(--app-height, 100vh);
+  max-height: var(--app-height, 100vh);
   overflow: hidden;
   background: var(--bg-canvas);
   color: var(--text-primary);
@@ -119,8 +121,8 @@ html, body {
 .app-layout {
   display: flex;
   width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
+  height: var(--app-height, 100vh);
+  max-height: var(--app-height, 100vh);
   background: var(--bg-gradient);
   transition: transform 0.8s ease-in-out;
   will-change: transform;
@@ -155,7 +157,8 @@ html, body {
    ========================================================================== */
 .sidebar-column {
   width: 340px;
-  height: 100%;
+  height: var(--app-height, 100vh);
+  max-height: var(--app-height, 100vh);
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-card);
   display: flex;
@@ -509,8 +512,8 @@ html, body {
    ========================================================================== */
 .content-column {
   flex: 1;
-  height: 100%;
-  max-height: 100vh;
+  height: var(--app-height, 100vh);
+  max-height: var(--app-height, 100vh);
   min-height: 0;
   display: flex;
   flex-direction: column;
