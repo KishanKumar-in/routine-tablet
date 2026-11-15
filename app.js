@@ -1208,8 +1208,8 @@
         if (isCollege && t.nonCollegeOnly) return false;
         if (!isCollege && t.collegeOnly) return false;
 
-        // Repeat days check (for general tasks that aren't college-gated)
-        if (!t.collegeOnly && !t.nonCollegeOnly && t.days && !t.days.includes(dayOfWeek)) return false;
+        // Repeat days check
+        if (t.days && !t.days.includes(dayOfWeek)) return false;
 
         return true;
       })
