@@ -870,8 +870,8 @@
     { id: 'task-cooldown', title: 'Cool-down stretch + shower', timeOfDay: 'morning', targetTime: '07:05', isCore: false, days: [0, 1, 2, 3, 4, 5, 6], action: 'workout' },
     { id: 'task-cook-bf', title: 'Cook breakfast', timeOfDay: 'morning', targetTime: '07:30', isCore: false, days: [0, 1, 2, 3, 4, 5, 6], action: 'meals' },
     { id: 'task-eat-bf', title: 'Eat breakfast', timeOfDay: 'morning', targetTime: '08:00', isCore: true, days: [0, 1, 2, 3, 4, 5, 6], action: 'meals' },
-    { id: 'task-prep-col', title: 'Get ready for college, pack water bottle', timeOfDay: 'morning', targetTime: '08:30', isCore: false, days: [1, 2, 3, 4, 5], collegeOnly: true },
-    { id: 'task-prep-wknd', title: 'Weekend morning prep & review', timeOfDay: 'morning', targetTime: '08:30', isCore: false, days: [0, 6], nonCollegeOnly: true },
+    { id: 'task-prep-col', title: 'Get ready for college, pack water bottle', timeOfDay: 'morning', targetTime: '08:30', isCore: false, days: [0, 1, 2, 3, 4, 5, 6], collegeOnly: true },
+    { id: 'task-prep-wknd', title: 'Weekend morning prep & review', timeOfDay: 'morning', targetTime: '08:30', isCore: false, days: [0, 1, 2, 3, 4, 5, 6], nonCollegeOnly: true },
 
     // Lunch (on Non-College days):
     { id: 'task-eat-lunch', title: 'Eat lunch (Rice/Roti, Dal, Sabzi, Curd + 2 Eggs)', timeOfDay: 'afternoon', targetTime: '13:00', isCore: true, days: [0, 1, 2, 3, 4, 5, 6], nonCollegeOnly: true, action: 'meals' },
@@ -881,7 +881,7 @@
     { id: 'task-sun-prep', title: 'Sunday meal prep (boil 10 eggs, check groceries) & room reset', timeOfDay: 'afternoon', targetTime: '14:00', isCore: false, days: [0], nonCollegeOnly: true },
 
     // Post-College Shake:
-    { id: 'task-shake', title: 'Post-college muscle shake', timeOfDay: 'afternoon', targetTime: '16:30', isCore: true, days: [1, 2, 3, 4, 5], collegeOnly: true, action: 'meals' },
+    { id: 'task-shake', title: 'Post-college muscle shake', timeOfDay: 'afternoon', targetTime: '16:30', isCore: true, days: [0, 1, 2, 3, 4, 5, 6], collegeOnly: true, action: 'meals' },
 
     // Evening:
     { id: 'task-sport-wed', title: 'Volleyball / badminton with friends', timeOfDay: 'evening', targetTime: '17:15', isCore: false, days: [3] },
@@ -1204,12 +1204,12 @@
 
     return state.template
       .filter(t => {
-        // Repeat days check
-        if (t.days && !t.days.includes(dayOfWeek)) return false;
-
         // College vs non-college checks
         if (isCollege && t.nonCollegeOnly) return false;
         if (!isCollege && t.collegeOnly) return false;
+
+        // Repeat days check (for general tasks that aren't college-gated)
+        if (!t.collegeOnly && !t.nonCollegeOnly && t.days && !t.days.includes(dayOfWeek)) return false;
 
         return true;
       })
