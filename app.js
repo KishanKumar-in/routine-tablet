@@ -31,7 +31,7 @@
   ];
 
   const STORAGE_KEY = 'routine_tablet_v2_state';
-  const RING_CIRCUMFERENCE = 527.78; // 2 * Math.PI * 84
+  const RING_CIRCUMFERENCE = 452.39; // 2 * Math.PI * 72
 
   // --- STATE ---
   let state = {
