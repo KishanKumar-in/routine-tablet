@@ -1,9 +1,9 @@
-const CACHE_NAME = 'routine-tablet-v9';
+const CACHE_NAME = 'routine-tablet-v10';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
-  './app.js',
+  './app.js?v=9',
   './manifest.json',
   './fonts/Inter-Regular.woff2',
   './fonts/Inter-SemiBold.woff2',
