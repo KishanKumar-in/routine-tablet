@@ -1,0 +1,5 @@
+.playwright-cli/
+*.log
+local_test.png
+desktop-test.png
+.DS_Store
